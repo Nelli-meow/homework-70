@@ -1,11 +1,11 @@
 import {createSlice} from '@reduxjs/toolkit';
 
 interface contactsState {
-  phoneContacts: string;
+  phoneNumbers: string;
 }
 
 const initialState: contactsState = {
-  phoneContacts: '',
+  phoneNumbers: '',
 }
 
 export const contactsSlice = createSlice({
