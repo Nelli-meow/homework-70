@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Link, useParams } from 'react-router-dom';
 import { deleteContact } from '../../store/slices/contactsSlice';
+import './ContactInfoModal.css';
 
 
 const ContactInfo: React.FC = () => {
@@ -14,12 +15,13 @@ const ContactInfo: React.FC = () => {
   }
 
   return (
-    <div className="container">
-      <div className="border border-2 p-4 m-5">
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <Link className="close-button" to="/">×</Link>
         <div className="">
-          <div className="d-flex justify-content-sm-between align-items-center">
+          <div className="d-flex justify-content-start align-items-center mb-3">
             <img src={contact.photo} alt="avatar" style={{ width: '100px', height: '100px' }} />
-            <div>
+            <div className="ms-5">
               <h3>{contact.name}</h3>
               <p>Phone: {contact.phone}</p>
               <p>Email: {contact.email}</p>

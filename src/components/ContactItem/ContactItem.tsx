@@ -8,6 +8,7 @@ const ContactItem: React.FC<{ contact: IContact }> = ({ contact }) => {
     <Link
       to={`/contacts/${contact.id}`}
       className="text-decoration-none"
+
     >
       <div
         className="container border border-2 rounded p-3 d-flex align-items-center justify-content-start"

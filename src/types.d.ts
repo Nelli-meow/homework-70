@@ -5,3 +5,7 @@ export interface IContact {
   photo:string;
   id: string;
 }
+
+export interface IContactAPI {
+  [id: string]: IContact;
+}

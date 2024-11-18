@@ -2,8 +2,9 @@ import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { IContact } from '../../types';
 import { Link, useParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../app/hooks.ts';
+import { useAppDispatch } from '../../app/hooks.ts';
 import { addContact, editContact } from '../../store/slices/contactsSlice.ts';
+import axiosApi from '../../axiosAPI.ts';
 
 const initialForm = {
   name: '',
@@ -13,45 +14,72 @@ const initialForm = {
   id: '',
 };
 
-const ContactsFrom = () => {
-  const [contact, setContact] = useState<IContact>({...initialForm});
+const ContactsForm = () => {
+  const [contact, setContact] = useState<IContact>({ ...initialForm });
   const dispatch = useAppDispatch();
   const { id } = useParams();
 
-  const existingContact = useAppSelector((state) =>
-    state.contacts.contacts.find((c) => c.id === id)
-  );
+
+  const fetchContact = async () => {
+    if (id) {
+      try {
+        const response = await axiosApi.get(`contacts/${id}.json`);
+        if (response.data) {
+          setContact({
+            ...response.data,
+            id,
+          });
+
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
 
 
   useEffect(() => {
-    if (existingContact) {
-      setContact(existingContact);
+    if (id) {
+      void fetchContact();
     }
-  }, [existingContact]);
+  }, [id]);
 
   const onChangeField = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
     setContact((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   }, []);
 
-  const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
 
     if (contact.name.length === 0 || contact.email.length === 0 || contact.phone.length === 0 || contact.photo.length === 0) {
       alert('Don\'t leave fields blank');
     } else {
       if (id) {
-        dispatch(editContact({ ...contact, id }));
-      } else {
-        dispatch(addContact({ ...contact, id: new Date().toString() }));
-      }
 
-      setContact({...initialForm});
-      console.log(contact);
+        try {
+          await axiosApi.put(`contacts/${id}.json`, { ...contact });
+          dispatch(editContact({ ...contact, id }));
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+
+        try {
+          const newContact = { ...contact, id: new Date().toString() };
+          await axiosApi.post('contacts.json', newContact);
+          dispatch(addContact(newContact));
+
+        } catch (error) {
+          console.error( error);
+        }
+
+      }
+      setContact({ ...initialForm });
     }
   };
 
@@ -61,13 +89,23 @@ const ContactsFrom = () => {
       <form onSubmit={onSubmitForm}>
         <div className="mb-3">
           <label htmlFor="exampleInputName1" className="form-label">Name</label>
-          <input onChange={onChangeField} value={contact.name} name="name" className="form-control"/>
+          <input
+            onChange={onChangeField}
+            value={contact.name}
+            name="name"
+            className="form-control"
+          />
         </div>
         <div className="mb-3">
           <label htmlFor="exampleInputPhone1" className="form-label">Phone</label>
-          <input name="phone" onChange={onChangeField} value={contact.phone} className="form-control"/>
+          <input
+            name="phone"
+            onChange={onChangeField}
+            value={contact.phone}
+            className="form-control"
+          />
         </div>
-        <div className="mb-3 ">
+        <div className="mb-3">
           <label htmlFor="exampleInputEmail1" className="form-label">Email</label>
           <input
             name="email"
@@ -76,11 +114,16 @@ const ContactsFrom = () => {
             className="form-control"
           />
         </div>
-        <div className="mb-3 ">
+        <div className="mb-3">
           <label htmlFor="exampleInputPhoto1" className="form-label">Photo</label>
-          <input name="photo" onChange={onChangeField} value={contact.photo} className="form-control"/>
+          <input
+            name="photo"
+            onChange={onChangeField}
+            value={contact.photo}
+            className="form-control"
+          />
         </div>
-        <div className="mb-3 ">
+        <div className="mb-3">
           <label htmlFor="exampleInputPhoto1" className="form-label">Photo preview</label>
           {contact.photo && <img src={contact.photo} alt="Preview" style={{ width: '100px', height: '100px' }} />}
         </div>
@@ -93,4 +136,4 @@ const ContactsFrom = () => {
   );
 };
 
-export default ContactsFrom;
+export default ContactsForm;
