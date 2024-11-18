@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+//здусь список контактов будет
+
 const ContactItem = () => {
   return (
     <div className="container">

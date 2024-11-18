@@ -15,7 +15,7 @@ const contactsSlice = createSlice({
   initialState,
   reducers: {
     addContact: (state, action: PayloadAction<IContact>) => {
-      state.contacts(action.payload);
+      state.contacts.push(action.payload);
     },
     editContact: (state, action: PayloadAction<IContact>) => {
       const index = state.contacts.findIndex((c) => c.id === action.payload.id);
