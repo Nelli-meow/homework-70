@@ -10,6 +10,7 @@ const App = () => {
       <Header/>
       <Routes>
         <Route path="/new-contact" element={<ContactsFrom/>}/>
+        <Route path="*" element={<p className="text-center m-5 ">Page is not found</p>}/>
       </Routes>
     </>
   )
