@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { IContact } from '../../types';
 import { Link, useParams } from 'react-router-dom';
-import { useAppDispatch } from '../../app/hooks.ts';
+import { useAppDispatch, useAppSelector } from '../../app/hooks.ts';
 import { addContact, editContact } from '../../store/slices/contactsSlice.ts';
 
 const initialForm = {
@@ -18,6 +18,17 @@ const ContactsFrom = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams();
 
+  const existingContact = useAppSelector((state) =>
+    state.contacts.contacts.find((c) => c.id === id)
+  );
+
+
+  useEffect(() => {
+    if (existingContact) {
+      setContact(existingContact);
+    }
+  }, [existingContact]);
+
   const onChangeField = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
@@ -26,7 +37,6 @@ const ContactsFrom = () => {
       [name]: value,
     }));
   }, []);
-
 
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,8 +69,12 @@ const ContactsFrom = () => {
         </div>
         <div className="mb-3 ">
           <label htmlFor="exampleInputEmail1" className="form-label">Email</label>
-          <input name="email" onChange={onChangeField} value={contact.email} className="form-control"
-                 id="exampleInputEmail1" aria-describedby="emailHelp"/>
+          <input
+            name="email"
+            onChange={onChangeField}
+            value={contact.email}
+            className="form-control"
+          />
         </div>
         <div className="mb-3 ">
           <label htmlFor="exampleInputPhoto1" className="form-label">Photo</label>
